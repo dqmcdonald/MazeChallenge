@@ -69,6 +69,7 @@ class MazeEditor(object):
     
     def __init__(self):
         self.master = Tk()
+        self.master.title("Maze Editor")
          
         self.file_frame = Frame(self.master)
         Label(self.file_frame,text="Maze file:").pack(side=LEFT)
@@ -76,7 +77,9 @@ class MazeEditor(object):
         self.file_entry.pack(side=LEFT)
         Button(self.file_frame, text="New...", command=self.newMaze).pack(side=LEFT)
         Button(self.file_frame, text="Open...", command=self.openFile).pack(side=LEFT)
-        Button(self.file_frame, text="Save", command=self.writeFile).pack(side=LEFT)
+        self.save_button=Button(self.file_frame, text="Save", command=self.writeFile)
+        self.save_button.pack(side=LEFT)
+        self.save_button.config(state=DISABLED)
         self.file_frame.pack(anchor=W)
         
         
@@ -113,10 +116,11 @@ class MazeEditor(object):
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
         self.maze.addRat(Rat.DumbRat())
-        self.maze_view = MazeView( self.maze, 30, self.master)
+        self.maze_view = MazeView( self.maze, 30, self.master, show_grid=True)
         self.maze_view.drawMaze()  
          
         self.maze_view.addCallback(self.clicked)
+        self.save_button.config(state=NORMAL)
     
     def writeFile( self ):
         """
@@ -154,13 +158,14 @@ class MazeEditor(object):
         """
         d = NewMazeDialog(self,self.master)
         self.master.wait_window(d.top)
+        self.save_button.config(state=NORMAL)
         
     def createNewMaze(self, width, height):
         """
         Create a new maze and display it
         """
         self.maze = Maze(width, height)
-        self.maze_view = MazeView(self.maze,30,self.master)
+        self.maze_view = MazeView(self.maze,None,self.master)
         self.maze_view.drawMaze()
         self.maze_view.addCallback(self.clicked)
     

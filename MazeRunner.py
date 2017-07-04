@@ -31,6 +31,7 @@ class MazeRunner():
      def __init__(self):
          
         self.master = Tk()
+        self.master.title("Maze Runner")
         self.file_frame = Frame(self.master)
         Label(self.file_frame,text="Maze file:").pack(side=LEFT)
         self.file_entry = Entry( self.file_frame)
@@ -41,7 +42,6 @@ class MazeRunner():
         self.run_button.config(state=DISABLED)
         self.file_frame.pack(anchor=W)
         
-    
         self.rat_type = StringVar(self.master)
         
         rat_types = self.getRatTypes()
@@ -51,6 +51,10 @@ class MazeRunner():
         Label(self.rat_type_frame,text="Rat type:").pack(side=LEFT)
         self.rat_option = OptionMenu(*(self.rat_type_frame, self.rat_type) + tuple(rat_types))
         self.rat_option.pack(side=LEFT)
+        Label(self.rat_type_frame,text="Speed:").pack(side=LEFT)
+        self.speed_scale = Scale(self.rat_type_frame, from_=1, to=10, orient=HORIZONTAL)
+        self.speed_scale.set(7)
+        self.speed_scale.pack(side=LEFT)
         self.rat_type_frame.pack(anchor=W)
         
         self.maze=None
@@ -74,12 +78,21 @@ class MazeRunner():
         self.file_entry.delete(0,END)
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
-        self.maze_view = MazeView.MazeView( self.maze, 30, self.master)
+        self.maze_view = MazeView.MazeView( self.maze, None, self.master)
         self.maze_view.drawMaze()  
          
         self.maze_file_name = maze_file
         self.run_button.config(state=NORMAL)
         self.step_filename = os.path.splitext(self.maze_file_name)[0] + '.stp'
+     
+        
+     def getSpeed(self):
+         """
+         Get the speed from the scale widget and convert it to a delay
+         """
+         val= self.speed_scale.get()  # 0-100
+         return (1.0-(val)/10.0)/5.0 + 0.01
+         
         
      def run(self):
          
@@ -90,7 +103,7 @@ class MazeRunner():
              rat = rat_class()
              self.maze.addRat(rat)
              self.maze_view.drawMaze()  
-             self.maze.run(0.1)
+             self.maze.run(self.getSpeed())
              messagebox.showinfo('Found!',"The rat found the cheese")
              self.maze.saveSteps(self.step_filename)
         except RatStuck as e:

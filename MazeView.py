@@ -26,21 +26,31 @@ class MazeView(object):
     A class which represents the Maze as a Tk canvas
     """
     
-    def __init__(self, maze, cell_size, master ):
+    def __init__(self, maze, cell_size, master, show_grid=False ):
         """
         Initialise the maze view
         """
         self.maze = maze
-        self.cell_size = cell_size
+        
+        if cell_size is None:
+            self.cell_size = self.calculateCellSize(maze)
+        else:
+            self.cell_size = cell_size
+           
+            
+        
+        
+        self.show_grid = show_grid
         
         
         self.maze.addView( self )
         
         self.step_label = Label(master, text="")
         self.step_label.pack(fill=X, expand=1)
-        self.canvas = Canvas( master, width=maze.getWidth()*cell_size, height=maze.getHeight()*cell_size)
+        self.canvas = Canvas( master, width=maze.getWidth()*self.cell_size, height=maze.getHeight()*self.cell_size)
         self.canvas.pack(fill=BOTH, expand=1)
         self.canvas.bind("<Button-1>", self.buttonCB)
+        self.canvas.bind("<B1-Motion>", self.buttonCB)
         self.image_table = { }
         self.createRatImages()
         self.callbacks = []
@@ -53,12 +63,28 @@ class MazeView(object):
 
     def buttonCB( self, event ):
         """
-        Registered with the canvas for button one clicks
+        Registered with the canvas for button one clicks and drags
         """
         location = self.getLocation( (event.x,event.y))
         for c in self.callbacks:
             c(location)
         
+        
+    def calculateCellSize(self, maze):
+        """
+        Calculate an appropriate cell size based on the maximum dimension of the maze
+        """
+        max_dim = max(maze.getHeight(), maze.getWidth())
+      
+        # Apply a hueristic:
+        if max_dim < 10:
+            return 40
+        if max_dim < 20:
+            return 30
+        if max_dim < 30:
+            return 20
+        else:
+            return 10
     
     
     def createRatImages(self):
@@ -175,7 +201,9 @@ class MazeView(object):
             for j in range( self.maze.getHeight() ):
                 cell_type = self.maze.getCellType(i,j)
                 is_start = False
+                is_space = False
                 if cell_type == CellType.SPACE:
+                    is_space = True
                     fill = ""
                 elif cell_type == CellType.DESTINATION:
                     dest = (i,j)
@@ -185,8 +213,13 @@ class MazeView(object):
                     is_start = True
                 elif cell_type == CellType.WALL:
                     fill ="black"
-                rect = self.canvas.create_rectangle(xpos,ypos,xpos+self.cell_size, ypos+self.cell_size, fill=fill)
+                    
+                if is_space and self.show_grid:
+                    rect = self.canvas.create_rectangle(xpos,ypos,xpos+self.cell_size, ypos+self.cell_size, fill=fill)
                 
+                if not is_space:
+                    rect = self.canvas.create_rectangle(xpos,ypos,xpos+self.cell_size, ypos+self.cell_size, fill=fill)
+                    
                 if is_start:
                     self.start= rect
                 
