@@ -85,7 +85,8 @@ class DumbRat(RatBase):
     A dumb rat, doesn't actually ever turn
     """
     
-    
+    def __init__(self):
+        super().__init__()
     
     def doTurn(self, loc_info):
         """
@@ -105,7 +106,7 @@ class TurnLeftRat(RatBase):
         """
         Always turn left when faced with a wall
         """
-        if loc_info.front == Maze.CellType.WALL:
+        if loc_info.front_wall:
             self.turnLeft()
     
 
@@ -116,13 +117,13 @@ class TurnAroundRat(RatBase):
    This rat always turns around when faced with a wall!
     """
     
-    
+ 
     
     def doTurn(self, loc_info):
         """
         Always turn around when faced with a wall
         """
-        if loc_info.front == Maze.CellType.WALL:
+        if loc_info.front_wall:
             self.turnAround()
     
 

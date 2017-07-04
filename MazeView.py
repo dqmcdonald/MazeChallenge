@@ -8,16 +8,16 @@ Created on Thu Jun 29 11:10:49 2017
 A class which represents the Maze as a Tk canvas
 """
 from tkinter import *
-from tkinter import messagebox
+
+from tkinter import messagebox, filedialog
 
 from Maze import CellType, Maze,RatStuck, RatStarved
 import Rat
 from PIL import Image, ImageTk
 import time
 import math
-
-
-
+import os.path
+import inspect
 
 
 
@@ -67,38 +67,42 @@ class MazeView(object):
         """
         
         
-        image = Image.open("rat90.gif")
+        image = Image.open("images/rat90.gif")
         image.thumbnail((self.cell_size*2,self.cell_size*2), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         self.rat90_img = image
         self.image_table[90] = photo
        
         
-        image = Image.open("rat0.gif")
+        image = Image.open("images/rat0.gif")
         image.thumbnail((self.cell_size*2,self.cell_size*2), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         self.rat0_img = image
         self.image_table[0] = photo
         
         
-        image = Image.open("rat270.gif")
+        image = Image.open("images/rat270.gif")
         image.thumbnail((self.cell_size*2,self.cell_size*2), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         self.rat270_img = image
         self.image_table[270]=photo
         
-        image = Image.open("rat180.gif")
+        image = Image.open("images/rat180.gif")
         image.thumbnail((self.cell_size*2,self.cell_size*2), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         self.rat180_img = image
         self.image_table[180]=photo
         
-        image = Image.open("cheese.gif")
+        image = Image.open("images/cheese.gif")
         image.thumbnail((self.cell_size*2,self.cell_size*2), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         self.cheese_img = image
         self.cheese_photo = photo
-        
+      
+    
+    def remove(self):
+        if self.canvas:
+            self.canvas.pack_forget()
     
     def setCellSize( self, cell_size ):
         """
@@ -152,19 +156,21 @@ class MazeView(object):
         """
         Draw the maze() 
         """
+        
+      
         half_cell = self.cell_size*0.5
         xpos = 0
         ypos = (self.maze.getHeight()-1)*self.cell_size
         dest = (0,0)
         start= (0,0)
  
-        self.canvas.delete("ALL")
+        self.canvas.delete(ALL)
         if self.cheese:
             self.canvas.delete(self.cheese)
         if self.start:
             self.canvas.delete(self.start)
         
-        
+        fill=""
         for i in range(self.maze.getWidth()):
             for j in range( self.maze.getHeight() ):
                 cell_type = self.maze.getCellType(i,j)
@@ -194,6 +200,7 @@ class MazeView(object):
             rat_coord = self.getCoords(rat_loc)
             rat.image = self.canvas.create_image(rat_coord[0],rat_coord[1],
                                             image=self.image_table[90], state=NORMAL)
+           
         
         if self.maze.hasDestination() :
             dest = self.maze.getDestination()
@@ -202,39 +209,3 @@ class MazeView(object):
                     image=self.cheese_photo, state=NORMAL)
 
         
-class MazeViewer():
-     """
-     Displays a maze and allows the running of a simulation
-     """
-     def __init__(self, filename, rat_type):
-         
-         self.master = Tk()
-         
-         self.button = Button(self.master,text="Run", command=self.run)
-         self.button.pack()
-        
-         
-         self.maze = Maze(filename=filename)
-         rat = rat_type()
-         self.maze.addRat(rat)
-         self.maze_view = MazeView( self.maze, 30, self.master)
-         self.maze_view.drawMaze()  
-         
-
-         mainloop()
-     
-   
-        
-     def run(self):
-        try:
-             self.maze.run(0.1)
-             messagebox.showinfo('Found!',"The rat found the cheese")
-        except RatStuck as e:
-            messagebox.showwarning('Stuck',str(e))
-        except RatStarved as e:
-            messagebox.showwarning('Starved',str(e))
-
-
-    
-if __name__ == '__main__':
-    mv = MazeViewer("t2.npy", Rat.TurnLeftRat)

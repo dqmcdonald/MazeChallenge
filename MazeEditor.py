@@ -91,6 +91,7 @@ class MazeEditor(object):
         self.cell_type.set("Space")
         
         self.maze = None
+        self.maze_view = None
         
         
        
@@ -100,7 +101,14 @@ class MazeEditor(object):
         """
         When the "open file" button is clicked
         """
+       
         maze_file = filedialog.askopenfilename(defaultextension="*.npy", parent=self.master, title="Open Maze file")
+        
+        if not maze_file:
+            return
+        
+        if self.maze_view:
+            self.maze_view.remove()
         self.file_entry.delete(0,END)
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
@@ -160,6 +168,13 @@ class MazeEditor(object):
         """ 
         Handle a click in the maze
         """
+        
+        # Ignore hits on the borders:
+        if self.maze.onBorder( loc):
+            return
+        
+        
+        
         if  self.cell_type.get() == "Space":
             self.maze.setCellType(loc[0], loc[1], CellType.SPACE)
         elif  self.cell_type.get() == "Wall":
