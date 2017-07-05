@@ -90,6 +90,7 @@ class LocationInfo(object):
             for the front, left, right and behind cell
            front_wall, left_wall, right_wall, behind_wall - Booleans indicating if a wall is
             to the front, left, right or behind the current cell. 
+           destination - the location (x,y) of the destination cell
        """
        
        dir_front = math.radians(direction)
@@ -114,6 +115,8 @@ class LocationInfo(object):
        self.behind_loc = (current_location[0]+int(math.sin(dir_behind)),
                                      current_location[1]+int(math.cos(dir_behind)))      
        self.behind_wall = maze.getCellTypeByLocation(self.behind_loc)==CellType.WALL
+       
+       self.destination = maze.getDestination()
  
 
 
@@ -408,6 +411,7 @@ class Maze(object):
             rat_loc = rat.getLocation()
             step_pos.append(rat_loc)
             if rat_loc == self.getDestination():
+                self.steps.append((step_dir,step_pos))
                 return True
             
         self.updateViews(UpdateType.LOCATION)

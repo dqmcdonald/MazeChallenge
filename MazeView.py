@@ -26,7 +26,7 @@ class MazeView(object):
     A class which represents the Maze as a Tk canvas
     """
     
-    def __init__(self, maze, cell_size, master, show_grid=False ):
+    def __init__(self, maze,  master, cell_size=None, show_grid=False ):
         """
         Initialise the maze view
         """
@@ -77,11 +77,11 @@ class MazeView(object):
         max_dim = max(maze.getHeight(), maze.getWidth())
       
         # Apply a hueristic:
-        if max_dim < 10:
+        if max_dim <= 20:
             return 40
-        if max_dim < 20:
+        if max_dim <= 30:
             return 30
-        if max_dim < 30:
+        if max_dim <= 40:
             return 20
         else:
             return 10
@@ -129,6 +129,8 @@ class MazeView(object):
     def remove(self):
         if self.canvas:
             self.canvas.pack_forget()
+        if self.step_label:
+            self.step_label.pack_forget()
     
     def setCellSize( self, cell_size ):
         """

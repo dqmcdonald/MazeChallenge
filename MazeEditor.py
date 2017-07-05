@@ -116,7 +116,7 @@ class MazeEditor(object):
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
         self.maze.addRat(Rat.DumbRat())
-        self.maze_view = MazeView( self.maze, 30, self.master, show_grid=True)
+        self.maze_view = MazeView( self.maze, self.master, show_grid=True)
         self.maze_view.drawMaze()  
          
         self.maze_view.addCallback(self.clicked)
@@ -165,7 +165,7 @@ class MazeEditor(object):
         Create a new maze and display it
         """
         self.maze = Maze(width, height)
-        self.maze_view = MazeView(self.maze,None,self.master)
+        self.maze_view = MazeView(self.maze,self.master, show_grid=True)
         self.maze_view.drawMaze()
         self.maze_view.addCallback(self.clicked)
     

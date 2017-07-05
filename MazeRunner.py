@@ -78,12 +78,12 @@ class MazeRunner():
         self.file_entry.delete(0,END)
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
-        self.maze_view = MazeView.MazeView( self.maze, None, self.master)
+        self.maze_view = MazeView.MazeView( self.maze, self.master)
         self.maze_view.drawMaze()  
          
         self.maze_file_name = maze_file
         self.run_button.config(state=NORMAL)
-        self.step_filename = os.path.splitext(self.maze_file_name)[0] + '.stp'
+       
      
         
      def getSpeed(self):
@@ -105,7 +105,7 @@ class MazeRunner():
              self.maze_view.drawMaze()  
              self.maze.run(self.getSpeed())
              messagebox.showinfo('Found!',"The rat found the cheese")
-             self.maze.saveSteps(self.step_filename)
+             
         except RatStuck as e:
             messagebox.showwarning('Stuck',str(e))
         except RatStarved as e:

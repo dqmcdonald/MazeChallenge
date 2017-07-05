@@ -69,7 +69,7 @@ class MazePlayer(object):
         self.file_entry.delete(0,END)
         self.file_entry.insert(0,maze_file)
         self.maze = Maze( filename=maze_file)
-        self.maze_view = MazeView( self.maze, None, self.master)
+        self.maze_view = MazeView( self.maze, self.master)
         self.maze_view.drawMaze()  
          
         self.maze_file_name = maze_file
